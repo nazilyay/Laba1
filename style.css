@@ -1,0 +1,37 @@
+.clear {
+	float: left;
+	clear: both;
+}
+.photo {
+    background: #c7eea1; /* Цвет фона */
+    width: 300px; /* Ширина */
+    margin: 0 10px 10px 0; /* Отступы */
+    padding: 10px 0; /* Поля сверху и снизу */
+    text-align: center; /* Выравнивание по центру */
+    display: inline-block; /* Строчно-блочный элемент 
+   */
+}
+.photo img {
+    border: 2px solid #bbbd8e; /* Параметры рамки */
+}
+.photo p {
+    margin: 0; /* Отступы */
+}
+
+body {
+    font: 10pt Arial, Helvetica, sans-serif; /* Шрифт
+   на веб-странице */
+    background: #dff6c8; /* Цвет фона */
+}
+
+h2 {
+    font-size: 1.1em; /* Размер шрифта */
+    color: #800040; /* Цвет текста */
+    margin-top: 0; /* Отступ сверху */
+}
+
+.plus {
+	background: #c7eea1; /* Цвет фона */
+    width: 920px; /* Ширина */
+    text-align: center; /* Выравнивание по центру */
+}
