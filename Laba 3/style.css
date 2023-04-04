@@ -133,3 +133,27 @@ main .image-box .image-text {
 main .table{
     background:  #F1E1FE;
 }
+
+.tabs a span {
+	display: inline-block;
+	border-radius: 5px 5px 0 0;
+	width: 100px;
+	margin-left: 10px;
+	text-align: center;
+	background: #fff;
+	padding: 5px;
+	color: #000;
+	cursor: pointer;
+}
+
+.tabs a span.active {
+	background: #F1E1FE;
+	color: #000;
+}
+
+.tabs a span.hover {
+	background: #F1E1FE;
+	color: #000;
+}
+
+    
