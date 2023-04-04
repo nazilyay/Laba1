@@ -156,4 +156,37 @@ main .table{
 	color: #000;
 }
 
-    
+.content {
+	border: 1px solid #fff;
+}
+
+.content-active {
+	border: 1px solid #F1E1FE;
+}
+
+.inputStyle {
+	height: 25px;
+	margin-left: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	width: 363px;
+}
+
+.buttonStyle {
+	margin-bottom: 10px;
+	width: 100px;
+	height: 25px;
+	cursor: pointer;
+	margin-left: 279px;
+	background: #fff;
+}
+
+.buttonStyle:hover {
+	background: #F1E1FE;
+	color: #fff;
+}
+
+.buttonStyle:active {
+	background: #F1E1FE;
+	color: #fff;
+}    
