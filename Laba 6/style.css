@@ -165,25 +165,30 @@ main .table{
 }
 
 .inputStyleDescription {
-	height: 25px;
-	margin-left: 10px;
-	margin-top: 20px;
-	margin-bottom: 10px;
-	width: 363px;
-}
-
-.inputStyleTags {
+	border-radius: 3px;
 	height: 25px;
 	margin-left: 10px;
 	margin-top: 10px;
 	margin-bottom: 10px;
 	width: 363px;
+	font-family: Comic Sans MS;
+}
+
+.inputStyleTags {
+	border-radius: 3px;
+	height: 25px;
+	margin-left: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	width: 363px;
+	font-family: Comic Sans MS;
 }
 
 .buttonStyle {
 	margin-bottom: 10px;
 	width: 100px;
 	height: 25px;
+	cursor: pointer;
 	margin-left: 279px;
 	background: #fff;
 }
@@ -194,11 +199,12 @@ main .table{
 }
 
 .buttonStyle:active {
-	background: #dabbf4;
+	background: #F1E1FE;
 	color: #fff;
 }    
 
 .showPictures {
+	border: 1px solid silver;
 	width: 90%;
 	height: 90%;
 	margin-top: 20px;
@@ -208,10 +214,12 @@ main .table{
 }
 
 #fieldForTagsOfOicture {
+	border-radius: 3px;
 	height: 25px;
-	width: 415px;
-	margin-top: 20px;
-	margin-left: 2%;
+	width: 363px;
+	font-family: Comic Sans MS;
+	margin-top: 10px;
+	margin-left: 6%;
 }
 
 .showPictures span {
@@ -226,4 +234,10 @@ main .table{
 #newPicture {
 	margin-top: 10px;
 	margin-left: 100px;
+}
+
+
+.clear {
+	clear: both;
+	float: left;
 }
