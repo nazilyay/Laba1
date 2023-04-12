@@ -38,6 +38,50 @@ function organizeByTags(toDoObjects) {
 	return json;
 }
 
+function convertToTags(obj) {
+	var newToDosDescription = obj.map(function (newToDo) {
+		return newToDo.description;
+	});
+
+	var newToDosTags = obj.map(function (toDo) {
+		return toDo.tags;
+	});
+	
+	var newTags = function(name, toDos) {
+		this.name = name;
+		this.toDos = toDos;
+	}
+	
+	var newArray = [];
+	var arrayTags = [];
+	var strTag = '';
+	var array = [];
+	
+	for (var i = 0; i < newToDosTags.length; i++) {
+		for (var j = 0; j < newToDosTags[i].length; j++) {
+			if (arrayTags.indexOf(newToDosTags[i][j]) == -1) {
+				arrayTags.push(newToDosTags[i][j]);
+				strTag = newToDosTags[i][j];
+				for (var k = 0; k < newToDosDescription.length; k++) {
+					if (newToDosTags[k].indexOf(newToDosTags[i][j]) != -1) {
+						newArray.push(newToDosDescription[k]);
+					}
+				}
+				
+				var x = new newTags(strTag, newArray);
+				newArray = [];
+				array.push(x);
+			}
+		}
+	}
+	
+	let json = JSON.stringify(array);
+	json = JSON.parse(json);
+	
+	return json;
+
+}
+
 ArraySections.forEach((element) => {
 	element.addEventListener("click", function() {
 		ContentPannel.classList.add("content-active");
@@ -91,6 +135,7 @@ var main = function (toDoObjects) {
 				});
 				$("main .content").append($content);
 			} else if ($element.parent().is(":nth-child(3)")) {
+				organizedByTag = convertToTags(toDoObjects);
 				organizedByTag.forEach(function (tag) {
 					var $tagName = $("<h3>").text(tag.name),
 					$content = $("<ul>");
@@ -121,7 +166,7 @@ var main = function (toDoObjects) {
 	
 	$(".content").on("click", ".buttonStyle", function() {
 		var newDescription = $("#description").val();
-		var newTags =  $("#tags").val().split(',');
+		var newTags =  $("#tags").val().replace(/\s/g, "").split(',');
 
 		var result = updateJson(toDoObjects, newDescription, newTags);
 
