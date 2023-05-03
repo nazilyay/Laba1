@@ -6,6 +6,7 @@ var $content;
 function loadBody() {
 	$(document).ready(function () {
 		$.getJSON("todos.json", function (toDoObjects) {
+			console.log(toDoObjects);
 			main(toDoObjects);
 		});
 	});
@@ -46,17 +47,17 @@ function convertToTags(obj) {
 	var newToDosTags = obj.map(function (toDo) {
 		return toDo.tags;
 	});
-	
+
 	var newTags = function(name, toDos) {
 		this.name = name;
 		this.toDos = toDos;
 	}
-	
+
 	var newArray = [];
 	var arrayTags = [];
 	var strTag = '';
 	var array = [];
-	
+
 	for (var i = 0; i < newToDosTags.length; i++) {
 		for (var j = 0; j < newToDosTags[i].length; j++) {
 			if (arrayTags.indexOf(newToDosTags[i][j]) == -1) {
@@ -67,17 +68,17 @@ function convertToTags(obj) {
 						newArray.push(newToDosDescription[k]);
 					}
 				}
-				
+
 				var x = new newTags(strTag, newArray);
 				newArray = [];
 				array.push(x);
 			}
 		}
 	}
-	
+
 	let json = JSON.stringify(array);
 	json = JSON.parse(json);
-	
+
 	return json;
 
 }
@@ -85,7 +86,7 @@ function convertToTags(obj) {
 ArraySections.forEach((element) => {
 	element.addEventListener("click", function() {
 		ContentPannel.classList.add("content-active");
-		
+
 		ArraySections.forEach((element) => {
 			element.classList.remove("active");
 		});
@@ -162,11 +163,24 @@ var main = function (toDoObjects) {
 		});
 	});
 
-	
-	
+
 	$(".content").on("click", ".buttonStyle", function() {
 		var newDescription = $("#description").val();
 		var newTags =  $("#tags").val().replace(/\s/g, "").split(',');
+		var newToDo = {"description":newDescription, "tags":newTags};
+
+		$.post("todos", newToDo, function (result) {
+			console.log(result);
+			
+			toDoObjects.push(newToDo);
+
+			organizedByTag = organizeByTags(toDoObjects);
+			
+
+			
+			$("#description").val("");
+			$("#tags").val("");
+		});
 
 		var result = updateJson(toDoObjects, newDescription, newTags);
 
