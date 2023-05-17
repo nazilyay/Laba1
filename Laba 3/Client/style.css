@@ -1,6 +1,7 @@
 body {
     background: white;
     font-family: 'Raleway', sans-serif;
+    margin:0 auto;
 }
 
 header,
@@ -13,17 +14,17 @@ header .container,
 main .container,
 footer .container {
     max-width: 1000px;
-    margin: auto;
+    margin: hidden;
 }
 
 header {
     background: #F1E1FE;
-    overflow: auto;
+    overflow: hidden;
 }
 
 footer {
     background: #F1E1FE;
-    overflow: auto;}
+    overflow: hidden;}
 
 header h1 {
     float: left;
@@ -157,12 +158,16 @@ main .table{
 }
 
 .content {
-	border: 1px solid #fff;
+	border: 1px solid #F1E1FE;
+    margin-left:1%;
+
+
 }
 
 .content-active {
 	border: 1px solid #F1E1FE;
 }
+
 
 .inputStyleDescription {
 	height: 25px;
@@ -226,4 +231,54 @@ main .table{
 #newPicture {
 	margin-top: 10px;
 	margin-left: 100px;
+}
+
+.mainTheme {
+	margin-top: 50px;
+	flex: 1 0 auto;
+	min-height: 100%;
+	display: flex;
+	justify-content: space-between;
+    max-width: 1000px;
+
+}
+
+.logOrRegRefBlock {
+	border-radius: 5px;
+	width: 100%;
+	height: 100px;
+	display: flex;
+    flex-direction: column;
+    margin-left:26%;
+	justify-content: space-between;
+}
+
+.logOrRegRefBlock button {
+	background-color: #FFFFFF;
+	border: 0.5px solid silver;
+	width: 45%;
+}
+
+.logOrRegRefBlock button:hover {
+	background-color: #0077FF;
+	color: #FFFFFF;
+	border: 0px solid silver;
+	cursor: pointer;
+}
+
+.logOrRegRefBlock button:active {
+	background-color: #004EA6;
+	color: #FFFFFF;
+	border: 0px solid silver;
+}
+
+.centerInfo {
+	margin-top: 4%;
+}
+
+.inputStyleUser {
+    margin-left:37%;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	width: 363px;
 }

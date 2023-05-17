@@ -1,145 +1,145 @@
-const ArraySections = document.querySelectorAll(".mainSectionPannel");
-const ContentPannel = document.getElementById("contentPannel");
-
-var $content;
-
-function loadBody() {
-	$(document).ready(function () {
-		$.getJSON("todos.json", function (toDoObjects) {
-			main(toDoObjects);
-		});
-	});
-}
-
-function organizeByTags(toDoObjects) {
-	var toDosDescription = toDoObjects.map(function (toDo) {
-		return toDo.description;
-	});
-
-	var toDosTags = toDoObjects.map(function (toDo) {
-		return toDo.tags;
-	});
-
-	var sTags = function(name, toDos) {
-		this.name = name;
-		this.toDos = toDos
-	}
-
-	var array = [];
-
-	for (var i = 0; i < toDosDescription.length; i++) {
-		var x = new sTags(toDosDescription[i], toDosTags[i]);
-		array.push(x);
-	}
-
-	let json = JSON.stringify(array);
-	json = JSON.parse(json);
-	
-	return json;
-}
-
-
-function convertToTags(obj) {
-	var newToDosDescription = obj.map(function (newToDo) {
-		return newToDo.description;
-	});
-
-	var newToDosTags = obj.map(function (toDo) {
-		return toDo.tags;
-	});
-
-	var newTags = function(name, toDos) {
-		this.name = name;
-		this.toDos = toDos;
-	}
-
-	var newArray = [];
-	var arrayTags = [];
-	var strTag = '';
-	var array = [];
-
-	for (var i = 0; i < newToDosTags.length; i++) {
-		for (var j = 0; j < newToDosTags[i].length; j++) {
-			if (arrayTags.indexOf(newToDosTags[i][j]) == -1) {
-				arrayTags.push(newToDosTags[i][j]);
-				strTag = newToDosTags[i][j];
-				for (var k = 0; k < newToDosDescription.length; k++) {
-					if (newToDosTags[k].indexOf(newToDosTags[i][j]) != -1) {
-						newArray.push(newToDosDescription[k]);
-					}
-				}
-
-				var x = new newTags(strTag, newArray);
-				newArray = [];
-				array.push(x);
-			}
+function getUrlName() {
+	const paramsString = new URLSearchParams(document.location.href);
+		var searchParams = new URLSearchParams(paramsString);
+		
+		for(var pair of searchParams.entries()) {
+		   urlName = pair[0].replace("http://localhost:3000/users/", "");
+		   urlName = urlName.replace("/", "");
+		   console.log(urlName);
+		   break;
 		}
-	}
-
-	let json = JSON.stringify(array);
-	json = JSON.parse(json);
-
-	return json;
-
 }
 
-ArraySections.forEach((element) => {
-	element.addEventListener("click", function() {
-		ContentPannel.classList.add("content-active");
-		
-		ArraySections.forEach((element) => {
-			element.classList.remove("active");
+var organizeByTags = function (toDoObjects) { 
+	// создание пустого массива для тегов
+	var tags = [];
+	// перебираем все задачи toDos 
+	toDoObjects.forEach(function (toDo) {
+		// перебираем все теги для каждой задачи 
+		toDo.tags.forEach(function (tag) {
+			// убеждаемся, что этого тега еще нет в массиве
+			if (tags.indexOf(tag) === -1) { 
+				tags.push(tag);
+			}
 		});
-		
-		this.classList.add("active");
-	})
-	
-	element.addEventListener("mouseover", function() {
-		
-		ArraySections.forEach((element) => {
-			element.classList.remove("hover");
+	}); 
+	var tagObjects = tags.map(function (tag) {
+		// здесь мы находим все задачи,
+		// содержащие этот тег
+		var toDosWithTag = []; 
+		toDoObjects.forEach(function (toDo) {
+			// проверка, что результат
+			// indexOf is *не* равен -1
+			if (toDo.tags.indexOf(tag) !== -1) { 
+				toDosWithTag.push(toDo.description);
+			}
 		});
-		
-		this.classList.add("hover");
-	})
-	
-	element.addEventListener("mouseout", function() {
-		
-		ArraySections.forEach((element) => {
-			element.classList.remove("hover");
+		// мы связываем каждый тег с объектом, который содержит название тега и массив
+		return { "name": tag, "toDos": toDosWithTag };
+	});
+	return tagObjects;
+};
+
+var liaWithEditOrDeleteOnClick = function (todo, callback) {
+	var $todoListItem = $("<li>").text(todo.description),
+		$todoEditLink = $("<a>").attr("href", "todos/" + todo._id),
+		$todoRemoveLink = $("<a>").attr("href", "todos/" + todo._id);
+
+	$todoEditLink.addClass("linkEdit");
+	$todoRemoveLink.addClass("linkRemove");
+
+	$todoRemoveLink.text("  ---Удалить---");
+	$todoRemoveLink.on("click", function () {
+		$.ajax({
+			url: "/todos/" + todo._id,
+			type: "DELETE"
+		}).done(function (responde) {
+			callback();
+		}).fail(function (err) {
+			console.log("error on delete 'todo'!");
 		});
-	})
-});
+		return false;
+	});
+	$todoListItem.append($todoRemoveLink);
+
+	$todoEditLink.text("  ---Редактировать---");
+	$todoEditLink.on("click", function() {
+		var newDescription = prompt(" Введите новое наименование для задачи ", todo.description);
+		if (newDescription !== null && newDescription.trim() !== "") {
+			$.ajax({
+				"url": "/todos/" + todo._id,
+				"type": "PUT",
+				"data": { "description": newDescription },
+			}).done(function (responde) {
+				callback();
+			}).fail(function (err) {
+				console.log("Произошла ошибка: " + err);
+			});
+		}
+		return false;
+	});
+	$todoListItem.append($todoEditLink);
+
+	return $todoListItem;
+}
 
 var main = function (toDoObjects) {
 	"use strict";
-	
-	var organizedByTagNewOld = organizeByTags(toDoObjects);
-	var organizedByTag = convertToTags(toDoObjects);
-
-	$(".tabs a span").toArray().forEach(function (element) {
-		$(element).on("click", function () {
-			$(".tabs a span").removeClass("active");
-            $(element).addClass("active");
-            $("main .content").empty();
-			var $element = $(element);
-			$("main .content").empty();
-			if ($element.parent().is(":nth-child(1)")) {
-				$content = $("<ul>");
-				for (var i = organizedByTagNewOld.length - 1; i > -1; i--) {
-					$content.append($("<li>").text(organizedByTagNewOld[i].name));
+	// создание пустого массива с вкладками
+	var tabs = [];
+	// добавляем вкладку Новые
+	tabs.push({
+		"name": "Новые",
+		// создаем функцию content
+		// так, что она принимает обратный вызов
+		"content": function(callback) {
+			$.getJSON("http://localhost:3000/todos/" + urlName, function (toDoObjects) {
+				var $content = $("<ul>");
+				for (var i = toDoObjects.length-1; i>=0; i--) {
+					var $todoListItem = liaWithEditOrDeleteOnClick(toDoObjects[i], function() {
+						$(".tabs a:first-child span").trigger("click");
+					});
+					$content.append($todoListItem);
 				}
-				$("main .content").append($content);
-			} else if ($element.parent().is(":nth-child(2)")) {
+				callback(null, $content);
+			}).fail(function (jqXHR, textStatus, error) {
+				callback(error, null);
+			});
+		}
+	});
+
+	// добавляем вкладку Старые
+	tabs.push({
+		"name": "Старые",
+		"content": function(callback) {
+			$.getJSON("http://localhost:3000/todos/" + urlName, function (toDoObjects) {
+				var $content,
+					i;
 				$content = $("<ul>");
-				organizedByTagNewOld.forEach(function (todo) {
-					$content.append($("<li>").text(todo.name));
-				});
-				$("main .content").append($content);
-			} else if ($element.parent().is(":nth-child(3)")) {
+				for (i = 0; i < toDoObjects.length; i++) {
+					var $todoListItem = liaWithEditOrDeleteOnClick(toDoObjects[i], function() {
+						$(".tabs a:nth-child(2) span").trigger("click");
+					});
+					$content.append($todoListItem);
+				}
+				callback(null, $content);
+			}).fail(function(jqXHR, textStatus, error) {
+				callback(error, null);
+			});
+		}
+	});
+
+	// добавляем вкладку Теги
+	tabs.push({
+		"name": "Теги",
+		"content":function (callback) {
+			$.get("http://localhost:3000/todos/" + urlName, function (toDoObjects) {	
+				// создание $content для Теги 
+				var organizedByTag = organizeByTags(toDoObjects),
+					$content;
 				organizedByTag.forEach(function (tag) {
-					var $tagName = $("<h3>").text(tag.name),
-					$content = $("<ul>");
+					var $tagName = $("<h3>").text(tag.name);
+						$content = $("<ul>");
 					tag.toDos.forEach(function (description) {
 						var $li = $("<li>").text(description);
 						$content.append($li);
@@ -147,49 +147,86 @@ var main = function (toDoObjects) {
 					$("main .content").append($tagName);
 					$("main .content").append($content);
 				});
-			} else if ($element.parent().is(":nth-child(4)")) {
-				$(".content").append("<input id='description'>");
-				$(".content #description").addClass("inputStyleDescription");
-				$(".content").append("<br />");
-				$(".content").append("<input id='tags'>");
-				$(".content #tags").addClass("inputStyleTags");
-				$(".content").append("<br />");
-				$(".content").append("<button>Добавить</button>");
-				$(".content br").addClass("clear");
-				$(".content button").addClass("buttonStyle");
-			}
-			
+				callback(null,$content);
+			}).fail(function (jqXHR, textStatus, error) {
+				// в этом случае мы отправляем ошибку вместе с null для $content
+				callback(error, null);
+			});
+		}
+	});
+
+	// создаем вкладку Добавить
+	tabs.push({
+		"name": " Добавить",
+		"content":function () {
+			$.get("http://localhost:3000/todos/" + urlName, function (toDoObjects) {	
+				// создание $content для Добавить 
+				var $input = $("<input>"),//.addClass("description"), 
+					$tagInput = $("<input>"),//.addClass("tags"),
+					$button = $("<button>").text("Добавить"),
+					$content1 = $("<ul>"), $content2 = $("<ul>");
+
+				$content1.append($input);
+				$content2.append($tagInput);
+
+				$("main .content").append($content1);
+				$("main .content").append($content2);
+				$("main .content").append($button); 
+				
+				function btnfunc() {
+					var description = $input.val(),
+						tags = $tagInput.val().split(","),
+						// создаем новый элемент списка задач
+						newToDo = {"description":description, "tags":tags};
+					$.post("todos", newToDo, function(result) {
+						$input.val("");
+						$tagInput.val("");
+						$(".tabs a:first-child span").trigger("click");
+					});
+				}
+				$button.on("click", function() {
+					btnfunc();
+				});
+				$('.tags').on('keydown',function(e){
+					if (e.which === 13) {
+						btnfunc();
+					}
+				});
+			});
+		}
+	});
+
+	tabs.forEach(function (tab) {
+		var $aElement = $("<a>").attr("href",""),
+			$spanElement = $("<span>").text(tab.name);
+		$aElement.append($spanElement);
+		$("main .tabs").append($aElement);
+
+		$spanElement.on("click", function () {
+			var $content;
+			$(".tabs a span").removeClass("active");
+			$spanElement.addClass("active");
+			$("main .content").empty();
+			tab.content(function (err, $content) {
+				if (err !== null) {
+					alert ("Возникла проблема при обработке запроса: " + err);
+				} else {
+					$("main .content").append($content);
+				}
+			});
 			return false;
 		});
 	});
-	
 
-	$(".content").on("click", ".buttonStyle", function() {
-		var newDescription = $("#description").val();
-		var newTags =  $("#tags").val().replace(/\s/g, "").split(',');
+	$(".tabs a:first-child span").trigger("click");
+}
 
-		var newToDo = {"description":newDescription, "tags":newTags};
+let urlName = "";
 
-		$.post("todos", newToDo, function (result) {
-			console.log(result);
-			toDoObjects.push(newToDo);
-			organizedByTag = convertToTags(toDoObjects);
-			
-			$("#description").val("");
-			$("#tags").val("");
-		});
-		
+getUrlName();
+
+$(document).ready(function() {
+	$.getJSON("http://localhost:3000/todos/" + urlName, function (toDoObjects) {
+		main(toDoObjects);
 	});
-}
-
-function updateJson(toDoObjects, newDescription, newTags) {
-	var newJsonObject = function(description, tags) {
-		this.description = description;
-		this.tags = tags
-	}
-	
-	var newJson = new newJsonObject(newDescription, newTags);
-	toDoObjects.push(newJson);
-
-	return toDoObjects;
-}
+});
