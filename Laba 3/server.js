@@ -1,55 +1,51 @@
-var express = require("express"),
-    http = require("http"),
-    app = express(),
-    toDos = [
-        {
-            "description": "Посмотреть напитки",
-            "tags": [
-                "Напитки",
-                "Кофе"
-            ]
-        },
-        {
-            "description": "Посмотреть завтраки",
-            "tags": [
-                "Напитки",
-                "Завтрак",
-                "Яичница",
-                "Каши",
-                "Кофе"
-            ]
-        },
-        {
-            "description": "Посмотреть ланчи",
-            "tags": [
-                "Ланч",
-                "Бизнес-ланч",
-                "Кофе"
-            ]
-        },
-        {
-            "description": "Посмотреть акции",
-            "tags": [
-                "Акции",
-                "Скидки",
-                "Кофе"
-            ]
-        }
-    ];
-app.use(express.static(__dirname + "/client"));
-http.createServer(app).listen(3000);
+const express = require("express");
+const http = require("http"); 
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-app.get("/todos.json", function (req, res) {
-    res.json(toDos);
+let app = express();
+app.use(express.static(__dirname + "/Client"));
+app.use(express.urlencoded({ extended: true }));
+
+mongoose.connect('mongodb://0.0.0.0:27017/CafeBD', { useNewUrlParser: true, useUnifiedTopology: true })  // Подключаемся к БД
+	.then(() => { // Успешное подключение
+        	console.log('db connected...');
+    	})
+    	.catch(() => { // Подключение безуспешно
+        	console.log('bad connection...');
+    	});
+
+let ToDo = mongoose.model('ToDo', new Schema({ description: String, tags: [ String ] })); // Создаем модель данных
+
+http.createServer(app).listen(3000); // Начинаем слушать запросы
+
+app.get("/todos.json", async (req, res) => { // Настраиваем маршрутизатор для GET-запроса
+		await ToDo.find() // Выбираем все объекты модели данных
+				.then((toDos) => { // Успешная читка
+					res.json(req);
+				})
+				.catch((err) => { // Ошибка читки
+					console.log(err);
+				});
 });
 
-app.use(express.static(__dirname + "/client"));
 
-app.use(express.urlencoded({ extended: true }));
-app.post("/todos", function (req, res) { // сейчас объект сохраняется в req.body
-    var newToDo = req.body;
-    console.log(newToDo);
-    toDos.push(newToDo);
-
-    res.json({ "message": "Вы размещаетесь на сервере!" }); // отправляем простой объект
+app.post("/todos", async (req, res) => { // Настроиваем маршрутизатор для POST-запроса
+	console.log(req.body);
+	let newToDo = new ToDo({"description":req.body.description, "tags":req.body.tags});
+	
+	const newToDosDoc = await newToDo.save() // Сохраняем (добавляем) новые данные в модель данных
+			.then(async (result) => { // Данные успешно сохранены
+				await ToDo.find()
+					.then(async (result) => { // Успешная читка
+						res.json(result);
+					})
+					.catch(async (err) => { // Ошибка читки
+						res.send('ERROR');
+					});
+			})
+			.catch(async (err) => { // Ошибка сохранения
+				console.log(err);
+				res.send('ERROR');
+			});
 });

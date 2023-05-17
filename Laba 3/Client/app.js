@@ -178,6 +178,7 @@ var main = function (toDoObjects) {
 			$("#description").val("");
 			$("#tags").val("");
 		});
+		
 	});
 }
 

@@ -1,10 +1,9 @@
 {
-  "name": "cafe",
-  "version": "1.0.0",
-  "dependencies": {
+    "name": "Cafe",
+    "version": "1.0.0",
+    "description": "",
+    "dependencies": {
     "express": "^4.17.1",
-    "install": "^0.13.0",
-    "mongodb": "^5.3.0",
-    "mongoose": "^5.13.17"
-  }
-}
+    "mongoose": "5.9.9"
+    }
+   }
